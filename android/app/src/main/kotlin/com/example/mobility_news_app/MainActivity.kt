@@ -1,4 +1,4 @@
-package com.example.mobility_tech_news_mobile
+package com.example.mobility_tech_news_app
 
 import io.flutter.embedding.android.FlutterActivity
 
