@@ -1,4 +1,4 @@
-# mobility-tech-news-mobile
+# mobility-tech-news-app
 
 A new Flutter project.
 
