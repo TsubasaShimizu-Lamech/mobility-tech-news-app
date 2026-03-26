@@ -104,6 +104,24 @@ cd /Users/shimizutsubasa/dev/project/mobility-tech-news-app
   build/app/outputs/flutter-apk/app-debug.apk
 ```
 
+### Web（ブラウザ）での開発実行
+
+Flutter web dev server のデフォルトは 8080 で Spring Boot と競合するため、`--web-port=3000` を指定する。
+
+```bash
+/Users/shimizutsubasa/fvm/cache.git/bin/flutter run \
+  -d chrome \
+  --web-port=3000 \
+  --dart-define=API_BASE_URL=http://192.168.11.12:8080
+```
+
+### Web 本番ビルド
+
+```bash
+/Users/shimizutsubasa/fvm/cache.git/bin/flutter build web \
+  --dart-define=API_BASE_URL=https://your-cloud-run-url
+```
+
 ### コード静的解析
 
 ```bash
@@ -141,10 +159,20 @@ FLUTTER_ROOT=/Users/shimizutsubasa/fvm/versions/3.16.5 \
 
 ---
 
+## バックエンド
+
+- リポジトリ: `/Users/shimizutsubasa/dev/project/mobility-tech-news-backend`
+- Web ビルド時の CORS は `SecurityConfig.java` で `http://localhost:3000` を許可済み
+- 本番環境に移行する際は `allowedOrigins` に本番 URL を追加すること
+
+---
+
 ## 既知の注意事項
 
 - **fvm 3.16.5 の dartdev.snapshot が欠損**しているため `flutter run` が使えない。必ず `fvm/cache.git/bin/flutter` を使うこと
-- **pubspec.yaml の `name` フィールド**はDart識別子の制約上ハイフン不可。`mobility_tech_news_mobile`（アンダースコア）を使用
-- **Android パッケージ名**も同様に `com.example.mobility_tech_news_mobile`
+- **pubspec.yaml の `name` フィールド**はDart識別子の制約上ハイフン不可。`mobility_tech_news_app`（アンダースコア）を使用
+- **Android パッケージ名**も同様に `com.example.mobility_tech_news_app`
 - Pixel 9a (Android 16) への ADB インストール時は **Play Protect の検証を無効化**する必要がある
 - **APIサーバーのIPアドレス**は `192.168.11.12`。Spring Boot 起動時は `0.0.0.0` でリッスンさせること
+- **Web 開発時の API URL** は `localhost:8080`（Android実機用の `192.168.11.12:8080` とは別）
+- **Web dev server** はデフォルト 8080 で Spring Boot と競合するため `--web-port=3000` を指定すること

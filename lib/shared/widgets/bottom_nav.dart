@@ -15,9 +15,58 @@ class MainScaffold extends ConsumerWidget {
     SettingsScreen(),
   ];
 
+  static const _destinations = [
+    (
+      icon: Icons.newspaper_outlined,
+      activeIcon: Icons.newspaper,
+      label: 'ニュース',
+    ),
+    (
+      icon: Icons.bookmark_border,
+      activeIcon: Icons.bookmark,
+      label: '保存済み',
+    ),
+    (
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings,
+      label: '設定',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentTab = ref.watch(_currentTabProvider);
+    final isWide = MediaQuery.of(context).size.width >= 600;
+
+    if (isWide) {
+      return Scaffold(
+        body: Row(
+          children: [
+            NavigationRail(
+              selectedIndex: currentTab,
+              onDestinationSelected: (index) =>
+                  ref.read(_currentTabProvider.notifier).state = index,
+              labelType: NavigationRailLabelType.all,
+              destinations: [
+                for (final d in _destinations)
+                  NavigationRailDestination(
+                    icon: Icon(d.icon),
+                    selectedIcon: Icon(d.activeIcon),
+                    label: Text(d.label),
+                  ),
+              ],
+            ),
+            const VerticalDivider(width: 1, thickness: 1),
+            Expanded(
+              child: IndexedStack(
+                index: currentTab,
+                children: _screens,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       body: IndexedStack(
@@ -27,22 +76,13 @@ class MainScaffold extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentTab,
         onTap: (index) => ref.read(_currentTabProvider.notifier).state = index,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper_outlined),
-            activeIcon: Icon(Icons.newspaper),
-            label: 'ニュース',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_border),
-            activeIcon: Icon(Icons.bookmark),
-            label: '保存済み',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: '設定',
-          ),
+        items: [
+          for (final d in _destinations)
+            BottomNavigationBarItem(
+              icon: Icon(d.icon),
+              activeIcon: Icon(d.activeIcon),
+              label: d.label,
+            ),
         ],
       ),
     );

@@ -50,7 +50,10 @@ class SettingsScreen extends ConsumerWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: ListView(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: ListView(
         children: [
           // アカウントセクション
           const _SectionHeader(title: 'アカウント'),
@@ -131,6 +134,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 24),
         ],
+          ),
+        ),
       ),
     );
   }

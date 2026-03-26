@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'news_provider.dart';
 import 'widgets/article_card.dart';
 import 'webview_screen.dart';
@@ -33,6 +35,17 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
     }
   }
 
+  void _openArticle(BuildContext context, Article article) {
+    if (kIsWeb) {
+      launchUrl(Uri.parse(article.url), mode: LaunchMode.externalApplication);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => WebViewScreen(article: article)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(newsNotifierProvider);
@@ -51,12 +64,15 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(newsNotifierProvider.notifier).refresh(),
-        child: _buildBody(state),
+        child: LayoutBuilder(
+          builder: (context, constraints) =>
+              _buildBody(context, state, constraints.maxWidth),
+        ),
       ),
     );
   }
 
-  Widget _buildBody(NewsState state) {
+  Widget _buildBody(BuildContext context, NewsState state, double width) {
     if (state.articles.isEmpty && state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -80,28 +96,46 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
       );
     }
 
-    return ListView.builder(
+    final crossAxisCount = width >= 900 ? 3 : (width >= 600 ? 2 : 1);
+
+    if (crossAxisCount == 1) {
+      return ListView.builder(
+        controller: _scrollController,
+        itemCount: state.articles.length + (state.hasMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == state.articles.length) {
+            return const Padding(
+              padding: EdgeInsets.all(24),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          final article = state.articles[index];
+          return ArticleCard(
+            article: article,
+            onTap: () => _openArticle(context, article),
+          );
+        },
+      );
+    }
+
+    return GridView.builder(
       controller: _scrollController,
+      padding: const EdgeInsets.all(8),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        mainAxisExtent: 200,
+        crossAxisSpacing: 0,
+        mainAxisSpacing: 0,
+      ),
       itemCount: state.articles.length + (state.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == state.articles.length) {
-          return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
-
         final article = state.articles[index];
         return ArticleCard(
           article: article,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => WebViewScreen(article: article),
-              ),
-            );
-          },
+          onTap: () => _openArticle(context, article),
         );
       },
     );
