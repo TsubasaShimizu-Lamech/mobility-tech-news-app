@@ -1,7 +1,7 @@
 // 環境変数は --dart-define で注入する
-// 例: flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co \
-//                 --dart-define=SUPABASE_ANON_KEY=eyJ... \
-//                 --dart-define=API_BASE_URL=http://localhost:8080
+// 本番: defaultValue の API Gateway URL が使われる
+// ローカル開発時の上書き例:
+//   flutter run --dart-define=API_BASE_URL=http://192.168.11.12:8080
 
 class AppConfig {
   AppConfig._();
@@ -18,7 +18,7 @@ class AppConfig {
 
   static const apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.11.12:8080',
+    defaultValue: 'https://mobility-tech-news-gateway-5rrv7j8s.an.gateway.dev',
   );
 
   static const int pageSize = 20;
