@@ -119,18 +119,20 @@ cd /Users/shimizutsubasa/dev/project/mobility-tech-news-app
 ### Web（ブラウザ）での開発実行
 
 Flutter web dev server のデフォルトは 8080 で Spring Boot と競合するため、`--web-port=3000` を指定する。
+CanvasKit レンダラーは外部画像を fetch で取得するため CORS エラーになる。**`--web-renderer html` を必ず指定すること**。
 
 ```bash
 /Users/shimizutsubasa/fvm/cache.git/bin/flutter run \
   -d chrome \
   --web-port=3000 \
+  --web-renderer html \
   --dart-define=API_BASE_URL=http://192.168.11.12:8080
 ```
 
 ### Web 本番ビルド
 
 ```bash
-/Users/shimizutsubasa/fvm/cache.git/bin/flutter build web
+/Users/shimizutsubasa/fvm/cache.git/bin/flutter build web --web-renderer html
 ```
 
 - `dart-define` 不要。`app_config.dart` のデフォルト値（API Gateway URL）が使われる
@@ -190,3 +192,5 @@ FLUTTER_ROOT=/Users/shimizutsubasa/fvm/versions/3.16.5 \
 - **ローカル開発時の API URL** は `http://192.168.11.12:8080`。`--dart-define` で上書きすること
 - **Web 開発時の API URL** は `localhost:8080`（Android実機用の `192.168.11.12:8080` とは別）
 - **Web dev server** はデフォルト 8080 で Spring Boot と競合するため `--web-port=3000` を指定すること
+- **Web レンダラー** は必ず `--web-renderer html` を指定すること。CanvasKit だと外部ドメイン画像が CORS エラーで表示されない
+- **ArticleCard の `showImagePlaceholder`**: グリッド表示時は `true`（デフォルト）、リスト表示時は `false` を渡す。グリッドでカード高さを揃えるために 160px プレースホルダーを使用

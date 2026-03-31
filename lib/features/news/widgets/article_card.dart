@@ -9,10 +9,12 @@ class ArticleCard extends ConsumerWidget {
     super.key,
     required this.article,
     required this.onTap,
+    this.showImagePlaceholder = true,
   });
 
   final Article article;
   final VoidCallback onTap;
+  final bool showImagePlaceholder;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,13 +32,22 @@ class ArticleCard extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (article.imageUrl != null && article.imageUrl!.isNotEmpty)
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Image.network(
-                  article.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                ),
+              Image.network(
+                article.imageUrl!,
+                width: double.infinity,
+                height: 160,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => showImagePlaceholder
+                    ? Container(
+                        height: 160,
+                        color: isDark ? const Color(0xFF1A1D27) : const Color(0xFFE8E8EA),
+                      )
+                    : const SizedBox.shrink(),
+              )
+            else if (showImagePlaceholder)
+              Container(
+                height: 160,
+                color: isDark ? const Color(0xFF1A1D27) : const Color(0xFFE8E8EA),
               ),
             Padding(
           padding: const EdgeInsets.all(16),
@@ -112,7 +123,7 @@ class ArticleCard extends ConsumerWidget {
   String _formatDate(String raw) {
     try {
       final dt = DateTime.parse(raw).toLocal();
-      return '${dt.month}/${dt.day}';
+      return '${dt.year}/${dt.month}/${dt.day}';
     } catch (_) {
       return raw;
     }

@@ -113,6 +113,7 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
           return ArticleCard(
             article: article,
             onTap: () => _openArticle(context, article),
+            showImagePlaceholder: false,
           );
         },
       );
@@ -123,7 +124,7 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
       padding: const EdgeInsets.all(8),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        mainAxisExtent: 200,
+        mainAxisExtent: 340,
         crossAxisSpacing: 0,
         mainAxisSpacing: 0,
       ),
