@@ -33,3 +33,4 @@ macos/.symlinks/
 # OS
 .DS_Store
 Thumbs.db
+.firebase/
